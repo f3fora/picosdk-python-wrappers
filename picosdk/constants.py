@@ -7,324 +7,275 @@ All constants in this file are exposed directly on the Library class specific to
 (rather than importing this file directly) is the supported way of accessing them, since some
 older drivers have different names/values for some of the macros.
 """
-from picosdk.errors import UnknownConstantError
+
+from enum import Enum
 
 
-# convenience functions provided in the old python SDK:
-def pico_tag(number):
-    """Get the macro name for a given PICO_STATUS value."""
-    try:
-        return PICO_STATUS_LOOKUP[number]
-    except KeyError:
-        raise UnknownConstantError("%s is not a known PICO_STATUS value." % number)
-
-
-def pico_num(tag):
-    """Resolve the numerical constant associated with a PICO_STATUS macro."""
-    try:
-        return PICO_STATUS[tag]
-    except KeyError:
-        raise UnknownConstantError("%s is not a known PICO_STATUS macro." % tag)
-
-
-def make_enum(members):
-    """All C enums with no specific values follow the pattern 0, 1, 2... in the order they are in source."""
-    enum = {}
-    for i, member in enumerate(members):
-        keys = [member]
-        if isinstance(member, tuple):
-            # this member has multiple names!
-            keys = member
-        for key in keys:
-            enum[key] = i
-    return enum
-
-
-PICO_STATUS = {
-    "PICO_OK": 0x00000000,
-    "PICO_MAX_UNITS_OPENED": 0x00000001,
-    "PICO_MEMORY_FAIL": 0x00000002,
-    "PICO_NOT_FOUND": 0x00000003,
-    "PICO_FW_FAIL": 0x00000004,
-    "PICO_OPEN_OPERATION_IN_PROGRESS": 0x00000005,
-    "PICO_OPERATION_FAILED": 0x00000006,
-    "PICO_NOT_RESPONDING": 0x00000007,
-    "PICO_CONFIG_FAIL": 0x00000008,
-    "PICO_KERNEL_DRIVER_TOO_OLD": 0x00000009,
-    "PICO_EEPROM_CORRUPT": 0x0000000A,
-    "PICO_OS_NOT_SUPPORTED": 0x0000000B,
-    "PICO_INVALID_HANDLE": 0x0000000C,
-    "PICO_INVALID_PARAMETER": 0x0000000D,
-    "PICO_INVALID_TIMEBASE": 0x0000000E,
-    "PICO_INVALID_VOLTAGE_RANGE": 0x0000000F,
-    "PICO_INVALID_CHANNEL": 0x00000010,
-    "PICO_INVALID_TRIGGER_CHANNEL": 0x00000011,
-    "PICO_INVALID_CONDITION_CHANNEL": 0x00000012,
-    "PICO_NO_SIGNAL_GENERATOR": 0x00000013,
-    "PICO_STREAMING_FAILED": 0x00000014,
-    "PICO_BLOCK_MODE_FAILED": 0x00000015,
-    "PICO_NULL_PARAMETER": 0x00000016,
-    "PICO_ETS_MODE_SET": 0x00000017,
-    "PICO_DATA_NOT_AVAILABLE": 0x00000018,
-    "PICO_STRING_BUFFER_TO_SMALL": 0x00000019,
-    "PICO_ETS_NOT_SUPPORTED": 0x0000001A,
-    "PICO_AUTO_TRIGGER_TIME_TO_SHORT": 0x0000001B,
-    "PICO_BUFFER_STALL": 0x0000001C,
-    "PICO_TOO_MANY_SAMPLES": 0x0000001D,
-    "PICO_TOO_MANY_SEGMENTS": 0x0000001E,
-    "PICO_PULSE_WIDTH_QUALIFIER": 0x0000001F,
-    "PICO_DELAY": 0x00000020,
-    "PICO_SOURCE_DETAILS": 0x00000021,
-    "PICO_CONDITIONS": 0x00000022,
-    "PICO_USER_CALLBACK": 0x00000023,
-    "PICO_DEVICE_SAMPLING": 0x00000024,
-    "PICO_NO_SAMPLES_AVAILABLE": 0x00000025,
-    "PICO_SEGMENT_OUT_OF_RANGE": 0x00000026,
-    "PICO_BUSY": 0x00000027,
-    "PICO_STARTINDEX_INVALID": 0x00000028,
-    "PICO_INVALID_INFO": 0x00000029,
-    "PICO_INFO_UNAVAILABLE": 0x0000002A,
-    "PICO_INVALID_SAMPLE_INTERVAL": 0x0000002B,
-    "PICO_TRIGGER_ERROR": 0x0000002C,
-    "PICO_MEMORY": 0x0000002D,
-    "PICO_SIG_GEN_PARAM": 0x0000002E,
-    "PICO_SHOTS_SWEEPS_WARNING": 0x0000002F,
-    "PICO_SIGGEN_TRIGGER_SOURCE": 0x00000030,
-    "PICO_AUX_OUTPUT_CONFLICT": 0x00000031,
-    "PICO_AUX_OUTPUT_ETS_CONFLICT": 0x00000032,
-    "PICO_WARNING_EXT_THRESHOLD_CONFLICT": 0x00000033,
-    "PICO_WARNING_AUX_OUTPUT_CONFLICT": 0x00000034,
-    "PICO_SIGGEN_OUTPUT_OVER_VOLTAGE": 0x00000035,
-    "PICO_DELAY_NULL": 0x00000036,
-    "PICO_INVALID_BUFFER": 0x00000037,
-    "PICO_SIGGEN_OFFSET_VOLTAGE": 0x00000038,
-    "PICO_SIGGEN_PK_TO_PK": 0x00000039,
-    "PICO_CANCELLED": 0x0000003A,
-    "PICO_SEGMENT_NOT_USED": 0x0000003B,
-    "PICO_INVALID_CALL": 0x0000003C,
-    "PICO_GET_VALUES_INTERRUPTED": 0x0000003D,
-    "PICO_NOT_USED": 0x0000003F,
-    "PICO_INVALID_SAMPLERATIO": 0x00000040,
-    "PICO_INVALID_STATE": 0x00000041,
-    "PICO_NOT_ENOUGH_SEGMENTS": 0x00000042,
-    "PICO_DRIVER_FUNCTION": 0x00000043,
-    "PICO_RESERVED": 0x00000044,
-    "PICO_INVALID_COUPLING": 0x00000045,
-    "PICO_BUFFERS_NOT_SET": 0x00000046,
-    "PICO_RATIO_MODE_NOT_SUPPORTED": 0x00000047,
-    "PICO_RAPID_NOT_SUPPORT_AGGREGATION": 0x00000048,
-    "PICO_INVALID_TRIGGER_PROPERTY": 0x00000049,
-    "PICO_INTERFACE_NOT_CONNECTED": 0x0000004A,
-    "PICO_RESISTANCE_AND_PROBE_NOT_ALLOWED": 0x0000004B,
-    "PICO_POWER_FAILED": 0x0000004C,
-    "PICO_SIGGEN_WAVEFORM_SETUP_FAILED": 0x0000004D,
-    "PICO_FPGA_FAIL": 0x0000004E,
-    "PICO_POWER_MANAGER": 0x0000004F,
-    "PICO_INVALID_ANALOGUE_OFFSET": 0x00000050,
-    "PICO_PLL_LOCK_FAILED": 0x00000051,
-    "PICO_ANALOG_BOARD": 0x00000052,
-    "PICO_CONFIG_FAIL_AWG": 0x00000053,
-    "PICO_INITIALISE_FPGA": 0x00000054,
-    "PICO_EXTERNAL_FREQUENCY_INVALID": 0x00000056,
-    "PICO_CLOCK_CHANGE_ERROR": 0x00000057,
-    "PICO_TRIGGER_AND_EXTERNAL_CLOCK_CLASH": 0x00000058,
-    "PICO_PWQ_AND_EXTERNAL_CLOCK_CLASH": 0x00000059,
-    "PICO_UNABLE_TO_OPEN_SCALING_FILE": 0x0000005A,
-    "PICO_MEMORY_CLOCK_FREQUENCY": 0x0000005B,
-    "PICO_I2C_NOT_RESPONDING": 0x0000005C,
-    "PICO_NO_CAPTURES_AVAILABLE": 0x0000005D,
-    "PICO_NOT_USED_IN_THIS_CAPTURE_MODE": 0x0000005E,
-    "PICO_TOO_MANY_TRIGGER_CHANNELS_IN_USE": 0x0000005F,
-    "PICO_INVALID_TRIGGER_DIRECTION": 0x00000060,
-    "PICO_INVALID_TRIGGER_STATES": 0x00000061,
-    "PICO_GET_DATA_ACTIVE": 0x00000103,
-    "PICO_IP_NETWORKED": 0x00000104,
-    "PICO_INVALID_IP_ADDRESS": 0x00000105,
-    "PICO_IPSOCKET_FAILED": 0x00000106,
-    "PICO_IPSOCKET_TIMEDOUT": 0x00000107,
-    "PICO_SETTINGS_FAILED": 0x00000108,
-    "PICO_NETWORK_FAILED": 0x00000109,
-    "PICO_WS2_32_DLL_NOT_LOADED": 0x0000010A,
-    "PICO_INVALID_IP_PORT": 0x0000010B,
-    "PICO_COUPLING_NOT_SUPPORTED": 0x0000010C,
-    "PICO_BANDWIDTH_NOT_SUPPORTED": 0x0000010D,
-    "PICO_INVALID_BANDWIDTH": 0x0000010E,
-    "PICO_AWG_NOT_SUPPORTED": 0x0000010F,
-    "PICO_ETS_NOT_RUNNING": 0x00000110,
-    "PICO_SIG_GEN_WHITENOISE_NOT_SUPPORTED": 0x00000111,
-    "PICO_SIG_GEN_WAVETYPE_NOT_SUPPORTED": 0x00000112,
-    "PICO_INVALID_DIGITAL_PORT": 0x00000113,
-    "PICO_INVALID_DIGITAL_CHANNEL": 0x00000114,
-    "PICO_INVALID_DIGITAL_TRIGGER_DIRECTION": 0x00000115,
-    "PICO_SIG_GEN_PRBS_NOT_SUPPORTED": 0x00000116,
-    "PICO_ETS_NOT_AVAILABLE_WITH_LOGIC_CHANNELS": 0x00000117,
-    "PICO_WARNING_REPEAT_VALUE": 0x00000118,
-    "PICO_POWER_SUPPLY_CONNECTED": 0x00000119,
-    "PICO_POWER_SUPPLY_NOT_CONNECTED": 0x0000011A,
-    "PICO_POWER_SUPPLY_REQUEST_INVALID": 0x0000011B,
-    "PICO_POWER_SUPPLY_UNDERVOLTAGE": 0x0000011C,
-    "PICO_CAPTURING_DATA": 0x0000011D,
-    "PICO_USB3_0_DEVICE_NON_USB3_0_PORT": 0x0000011E,
-    "PICO_NOT_SUPPORTED_BY_THIS_DEVICE": 0x0000011F,
-    "PICO_INVALID_DEVICE_RESOLUTION": 0x00000120,
-    "PICO_INVALID_NUMBER_CHANNELS_FOR_RESOLUTION": 0x00000121,
-    "PICO_CHANNEL_DISABLED_DUE_TO_USB_POWERED": 0x00000122,
-    "PICO_SIGGEN_DC_VOLTAGE_NOT_CONFIGURABLE": 0x00000123,
-    "PICO_NO_TRIGGER_ENABLED_FOR_TRIGGER_IN_PRE_TRIG": 0x00000124,
-    "PICO_TRIGGER_WITHIN_PRE_TRIG_NOT_ARMED": 0x00000125,
-    "PICO_TRIGGER_WITHIN_PRE_NOT_ALLOWED_WITH_DELAY": 0x00000126,
-    "PICO_TRIGGER_INDEX_UNAVAILABLE": 0x00000127,
-    "PICO_AWG_CLOCK_FREQUENCY": 0x00000128,
-    "PICO_TOO_MANY_CHANNELS_IN_USE": 0x00000129,
-    "PICO_NULL_CONDITIONS": 0x0000012A,
-    "PICO_DUPLICATE_CONDITION_SOURCE": 0x0000012B,
-    "PICO_INVALID_CONDITION_INFO": 0x0000012C,
-    "PICO_SETTINGS_READ_FAILED": 0x0000012D,
-    "PICO_SETTINGS_WRITE_FAILED": 0x0000012E,
-    "PICO_ARGUMENT_OUT_OF_RANGE": 0x0000012F,
-    "PICO_HARDWARE_VERSION_NOT_SUPPORTED": 0x00000130,
-    "PICO_DIGITAL_HARDWARE_VERSION_NOT_SUPPORTED": 0x00000131,
-    "PICO_ANALOGUE_HARDWARE_VERSION_NOT_SUPPORTED": 0x00000132,
-    "PICO_UNABLE_TO_CONVERT_TO_RESISTANCE": 0x00000133,
-    "PICO_DUPLICATED_CHANNEL": 0x00000134,
-    "PICO_INVALID_RESISTANCE_CONVERSION": 0x00000135,
-    "PICO_INVALID_VALUE_IN_MAX_BUFFER": 0x00000136,
-    "PICO_INVALID_VALUE_IN_MIN_BUFFER": 0x00000137,
-    "PICO_SIGGEN_FREQUENCY_OUT_OF_RANGE": 0x00000138,
-    "PICO_EEPROM2_CORRUPT": 0x00000139,
-    "PICO_EEPROM2_FAIL": 0x0000013A,
-    "PICO_SERIAL_BUFFER_TOO_SMALL": 0x0000013B,
-    "PICO_SIGGEN_TRIGGER_AND_EXTERNAL_CLOCK_CLASH": 0x0000013C,
-    "PICO_WARNING_SIGGEN_AUXIO_TRIGGER_DISABLED": 0x0000013D,
-    "PICO_SIGGEN_GATING_AUXIO_NOT_AVAILABLE": 0x00000013E,
-    "PICO_SIGGEN_GATING_AUXIO_ENABLED": 0x00000013F,
-    "PICO_RESOURCE_ERROR": 0x00000140,
-    "PICO_TEMPERATURE_TYPE_INVALID": 0x00000141,
-    "PICO_TEMPERATURE_TYPE_NOT_SUPPORTED": 0x00000142,
-    "PICO_TIMEOUT": 0x00000143,
-    "PICO_DEVICE_NOT_FUNCTIONING": 0x00000144,
-    "PICO_INTERNAL_ERROR": 0x00000145,
-    "PICO_MULTIPLE_DEVICES_FOUND": 0x00000146,
-    "PICO_WARNING_NUMBER_OF_SEGMENTS_REDUCED": 0x00000147,
-    "PICO_CAL_PINS_STATES": 0x00000148,
-    "PICO_CAL_PINS_FREQUENCY": 0x00000149,
-    "PICO_CAL_PINS_AMPLITUDE": 0x0000014A,
-    "PICO_CAL_PINS_WAVETYPE": 0x0000014B,
-    "PICO_CAL_PINS_OFFSET": 0x0000014C,
-    "PICO_PROBE_FAULT": 0x0000014D,
-    "PICO_PROBE_IDENTITY_UNKNOWN": 0x0000014E,
-    "PICO_PROBE_POWER_DC_POWER_SUPPLE_REQUIRED": 0x0000014F,
-    "PICO_PROBE_NOT_POWERED_THROUGH_DC_POWER_SUPPLY": 0x00000150,
-    "PICO_PROBE_CONFIG_FAILURE": 0x00000151,
-    "PICO_PROBE_INTERACTION_CALLBACK": 0x00000152,
-    "PICO_UNKNOWN_INTELLIGENT_PROBE": 0x00000153,
-    "PICO_INTELLIGENT_PROBE_CORRUPT": 0x00000154,
-    "PICO_PROBE_COLLECTION_NOT_STARTED": 0x00000155,
-    "PICO_PROBE_POWER_CONSUMPTION_EXCEEDED": 0x00000156,
-    "PICO_WARNING_PROBE_CHANNEL_OUT_OF_SYNC": 0x00000157,
-    "PICO_ENDPOINT_MISSING": 0x00000158,
-    "PICO_UNKNOWN_ENDPOINT_REQUEST": 0x00000159,
-    "PICO_ADC_TYPE_ERROR": 0x0000015A,
-    "PICO_FPGA2_FAILED": 0x0000015B,
-    "PICO_FPGA2_DEVICE_STATUS": 0x0000015C,
-    "PICO_ENABLED_PROGRAM_FPGA2_FAILED": 0x0000015D,
-    "PICO_NO_CANNELS_OR_PORTS_ENABLED": 0x0000015E,
-    "PICO_INVALID_RATIO_MODE": 0x0000015F,
-    "PICO_READS_NOT_SUPPORTED_IN_CURRENT_CAPTURE_MODE": 0x00000160,
-    "PICO_TRIGGER_READ_SELECTION_CHECK_FAILED": 0x00000161,
-    "PICO_DATA_READ1_SELECTION_CHECK_FAILED": 0x00000162,
-    "PICO_DATA_READ2_SELECTION_CHECK_FAILED": 0x00000164,
-    "PICO_DATA_READ3_SELECTION_CHECK_FAILED": 0x00000168,
-    "PICO_READ_SELECTION_OUT_OF_RANGE": 0x00000170,
-    "PICO_MULTIPLE_RATIO_MODES": 0x00000171,
-    "PICO_NO_SAMPLES_READ": 0x00000172,
-    "PICO_RATIO_MODE_NOT_REQUESTED": 0x00000173,
-    "PICO_NO_USER_READ_REQUESTS": 0x00000174,
-    "PICO_ZERO_SAMPLES_INVALID": 0x00000175,
-    "PICO_ANALOGUE_HARDWARE_MISSING": 0x00000176,
-    "PICO_ANALOGUE_HARDWARE_PINS": 0x00000177,
-    "PICO_ANALOGUE_SMPS_FAULT": 0x00000178,
-    "PICO_DIGITAL_ANALOGUE_HARDWARE_CONFLICT": 0x00000179,
-    "PICO_RATIO_MODE_BUFFER_NOT_SET": 0x0000017A,
-    "PICO_RESOLUTION_NOT_SUPPORTED_BY_VARIENT": 0x0000017B,
-    "PICO_THRESHOLD_OUT_OF_RANGE": 0x0000017C,
-    "PICO_INVALID_SIMPLE_TRIGGER_DIRECTION": 0x0000017D,
-    "PICO_AUX_NOT_SUPPORTED": 0x0000017E,
-    "PICO_NULL_DIRECTIONS": 0x0000017F,
-    "PICO_NULL_CHANNEL_PROPERTIES": 0x00000180,
-    "PICO_TRIGGER_CHANNEL_NOT_ENABLED": 0x00000181,
-    "PICO_CONDITION_HAS_NO_TRIGGER_PROPERTY": 0x00000182,
-    "PICO_RATIO_MODE_TRIGGER_MASKING_INVALID": 0x00000183,
-    "PICO_TRIGGER_DATA_REQUIRES_MIN_BUFFER_SIZE_OF_40_SAMPLES": 0x00000184,
-    "PICO_NO_OF_CAPTURES_OUT_OF_RANGE": 0x00000185,
-    "PICO_RATIO_MODE_SEGMENT_HEADER_DOES_NOT_REQUIRE_BUFFERS": 0x00000186,
-    "PICO_FOR_SEGMENT_HEADER_USE_GETTRIGGERINFO": 0x00000187,
-    "PICO_READ_NOT_SET": 0x00000188,
-    "PICO_ADC_SETTING_MISMATCH": 0x00000189,
-    "PICO_DATATYPE_INVALID": 0x0000018A,
-    "PICO_RATIO_MODE_DOES_NOT_SUPPORT_DATATYPE": 0x0000018B,
-    "PICO_CHANNEL_COMBINATION_NOT_VALID_IN_THIS_RESOLUTION": 0x0000018C,
-    "PICO_USE_8BIT_RESOLUTION": 0x0000018D,
-    "PICO_AGGREGATE_BUFFERS_SAME_POINTER": 0x0000018E,
-    "PICO_OVERLAPPED_READ_VALUES_OUT_OF_RANGE": 0x0000018F,
-    "PICO_OVERLAPPED_READ_SEGMENTS_OUT_OF_RANGE": 0x00000190,
-    "PICO_CHANNELFLAGSCOMBINATIONS_ARRAY_SIZE_TOO_SMALL": 0x00000191,
-    "PICO_CAPTURES_EXCEEDS_NO_OF_SUPPORTED_SEGMENTS": 0x00000192,
-    "PICO_TIME_UNITS_OUT_OF_RANGE": 0x00000193,
-    "PICO_NO_SAMPLES_REQUESTED": 0x00000194,
-    "PICO_INVALID_ACTION": 0x00000195,
-    "PICO_NO_OF_SAMPLES_NEED_TO_BE_EQUAL_WHEN_ADDING_BUFFERS": 0x00000196,
-    "PICO_WAITING_FOR_DATA_BUFFERS": 0x00000197,
-    "PICO_STREAMING_ONLY_SUPPORTS_ONE_READ": 0x00000198,
-    "PICO_CLEAR_DATA_BUFFER_INVALID": 0x00000199,
-    "PICO_INVALID_ACTION_FLAGS_COMBINATION": 0x0000019A,
-    "PICO_PICO_MOTH_MIN_AND_MAX_NULL_BUFFERS_CANNOT_BE_ADDED": 0x0000019B,
-    "PICO_CONFLICT_IN_SET_DATA_BUFFERS_CALL_REMOVE_DATA_BUFFER_TO_RESET": 0x0000019C,
-    "PICO_REMOVING_DATA_BUFFER_ENTRIES_NOT_ALLOWED_WHILE_DATA_PROCESSING": 0x0000019D,
-    "PICO_CYUSB_REQUEST_FAILED": 0x00000200,
-    "PICO_STREAMING_DATA_REQUIRED": 0x00000201,
-    "PICO_INVALID_NUMBER_OF_SAMPLES": 0x00000202,
-    "PICO_INALID_DISTRIBUTION": 0x00000203,
-    "PICO_BUFFER_LENGTH_GREATER_THAN_INT32_T": 0x00000204,
-    "PICO_PLL_MUX_OUT_FAILED": 0x00000209,
-    "PICO_ONE_PULSE_WIDTH_DIRECTION_ALLOWED": 0x0000020A,
-    "PICO_EXTERNAL_TRIGGER_NOT_SUPPORTED": 0x0000020B,
-    "PICO_NO_TRIGGER_CONDITIONS_SET": 0x0000020C,
-    "PICO_NO_OF_CHANNEL_TRIGGER_PROPERTIES_OUT_OF_RANGE": 0x0000020D,
-    "PICO_PROBE_COMPNENT_ERROR": 0x0000020E,
-    "PICO_INVALID_TRIGGER_CHANNELS_FOR_ETS": 0x00000210,
-    "PICO_NOT_AVALIABLE_WHEN_STREAMING_IS_RUNNING": 0x00000211,
-    "PICO_INVALID_TRIGGER_WITHIN_PRE_TRIGGER_STATE": 0x00000212,
-    "PICO_ZERO_NUMBER_OF_CAPTURES_INVALID": 0x00000213,
-    "PICO_TRIGGER_DELAY_OUT_OF_RANGE": 0x00000300,
-    "PICO_INVALID_THRESHOLD_DIRECTION": 0x00000301,
-    "PICO_INVALID_THRESGOLD_MODE": 0x00000302,
-    "PICO_DEVICE_TIME_STAMP_RESET": 0x01000000,
-    "PICO_WATCHDOGTIMER": 0x10000000,
-    "PICO_IPP_NOT_FOUND": 0x10000001,
-    "PICO_IPP_NO_FUNCTION": 0x10000002,
-    "PICO_IPP_ERROR": 0x10000003,
-    "PICO_SHADOW_CAL_NOT_AVAILABLE": 0x10000004,
-    "PICO_SHADOW_CAL_DISABLED": 0x10000005,
-    "PICO_SHADOW_CAL_ERROR": 0x10000006,
-    "PICO_SHADOW_CAL_CORRUPT": 0x10000007,
-}
-
-PICO_STATUS_LOOKUP = {v: k for k, v in PICO_STATUS.items()}
-
-PICO_INFO = {
-    "PICO_DRIVER_VERSION": 0x00000000,
-    "PICO_USB_VERSION": 0x00000001,
-    "PICO_HARDWARE_VERSION": 0x00000002,
-    "PICO_VARIANT_INFO": 0x00000003,
-    "PICO_BATCH_AND_SERIAL": 0x00000004,
-    "PICO_CAL_DATE": 0x00000005,
-    "PICO_KERNEL_VERSION": 0x00000006,
-    "PICO_DIGITAL_HARDWARE_VERSION": 0x00000007,
-    "PICO_ANALOGUE_HARDWARE_VERSION": 0x00000008,
-    "PICO_FIRMWARE_VERSION_1": 0x00000009,
-    "PICO_FIRMWARE_VERSION_2": 0x0000000A,
-    "PICO_MAC_ADDRESS": 0x0000000B,
-    "PICO_SHADOW_CAL": 0x0000000C,
-    "PICO_IPP_VERSION": 0x0000000D,
-}
+class PicoStatus(Enum):
+    ok = 0x00000000
+    max_units_opened = 0x00000001
+    memory_fail = 0x00000002
+    not_found = 0x00000003
+    fw_fail = 0x00000004
+    open_operation_in_progress = 0x00000005
+    operation_failed = 0x00000006
+    not_responding = 0x00000007
+    config_fail = 0x00000008
+    kernel_driver_too_old = 0x00000009
+    eeprom_corrupt = 0x0000000A
+    os_not_supported = 0x0000000B
+    invalid_handle = 0x0000000C
+    invalid_parameter = 0x0000000D
+    invalid_timebase = 0x0000000E
+    invalid_voltage_range = 0x0000000F
+    invalid_channel = 0x00000010
+    invalid_trigger_channel = 0x00000011
+    invalid_condition_channel = 0x00000012
+    no_signal_generator = 0x00000013
+    streaming_failed = 0x00000014
+    block_mode_failed = 0x00000015
+    null_parameter = 0x00000016
+    ets_mode_set = 0x00000017
+    data_not_available = 0x00000018
+    string_buffer_to_small = 0x00000019
+    ets_not_supported = 0x0000001A
+    auto_trigger_time_to_short = 0x0000001B
+    buffer_stall = 0x0000001C
+    too_many_samples = 0x0000001D
+    too_many_segments = 0x0000001E
+    pulse_width_qualifier = 0x0000001F
+    delay = 0x00000020
+    source_details = 0x00000021
+    conditions = 0x00000022
+    user_callback = 0x00000023
+    device_sampling = 0x00000024
+    no_samples_available = 0x00000025
+    segment_out_of_range = 0x00000026
+    busy = 0x00000027
+    startindex_invalid = 0x00000028
+    invalid_info = 0x00000029
+    info_unavailable = 0x0000002A
+    invalid_sample_interval = 0x0000002B
+    trigger_error = 0x0000002C
+    memory = 0x0000002D
+    sig_gen_param = 0x0000002E
+    shots_sweeps_warning = 0x0000002F
+    siggen_trigger_source = 0x00000030
+    aux_output_conflict = 0x00000031
+    aux_output_ets_conflict = 0x00000032
+    warning_ext_threshold_conflict = 0x00000033
+    warning_aux_output_conflict = 0x00000034
+    siggen_output_over_voltage = 0x00000035
+    delay_null = 0x00000036
+    invalid_buffer = 0x00000037
+    siggen_offset_voltage = 0x00000038
+    siggen_pk_to_pk = 0x00000039
+    cancelled = 0x0000003A
+    segment_not_used = 0x0000003B
+    invalid_call = 0x0000003C
+    get_values_interrupted = 0x0000003D
+    not_used = 0x0000003F
+    invalid_sampleratio = 0x00000040
+    invalid_state = 0x00000041
+    not_enough_segments = 0x00000042
+    driver_function = 0x00000043
+    reserved = 0x00000044
+    invalid_coupling = 0x00000045
+    buffers_not_set = 0x00000046
+    ratio_mode_not_supported = 0x00000047
+    rapid_not_support_aggregation = 0x00000048
+    invalid_trigger_property = 0x00000049
+    interface_not_connected = 0x0000004A
+    resistance_and_probe_not_allowed = 0x0000004B
+    power_failed = 0x0000004C
+    siggen_waveform_setup_failed = 0x0000004D
+    fpga_fail = 0x0000004E
+    power_manager = 0x0000004F
+    invalid_analogue_offset = 0x00000050
+    pll_lock_failed = 0x00000051
+    analog_board = 0x00000052
+    config_fail_awg = 0x00000053
+    initialise_fpga = 0x00000054
+    external_frequency_invalid = 0x00000056
+    clock_change_error = 0x00000057
+    trigger_and_external_clock_clash = 0x00000058
+    pwq_and_external_clock_clash = 0x00000059
+    unable_to_open_scaling_file = 0x0000005A
+    memory_clock_frequency = 0x0000005B
+    i2c_not_responding = 0x0000005C
+    no_captures_available = 0x0000005D
+    not_used_in_this_capture_mode = 0x0000005E
+    too_many_trigger_channels_in_use = 0x0000005F
+    invalid_trigger_direction = 0x00000060
+    invalid_trigger_states = 0x00000061
+    get_data_active = 0x00000103
+    ip_networked = 0x00000104
+    invalid_ip_address = 0x00000105
+    ipsocket_failed = 0x00000106
+    ipsocket_timedout = 0x00000107
+    settings_failed = 0x00000108
+    network_failed = 0x00000109
+    ws2_32_dll_not_loaded = 0x0000010A
+    invalid_ip_port = 0x0000010B
+    coupling_not_supported = 0x0000010C
+    bandwidth_not_supported = 0x0000010D
+    invalid_bandwidth = 0x0000010E
+    awg_not_supported = 0x0000010F
+    ets_not_running = 0x00000110
+    sig_gen_whitenoise_not_supported = 0x00000111
+    sig_gen_wavetype_not_supported = 0x00000112
+    invalid_digital_port = 0x00000113
+    invalid_digital_channel = 0x00000114
+    invalid_digital_trigger_direction = 0x00000115
+    sig_gen_prbs_not_supported = 0x00000116
+    ets_not_available_with_logic_channels = 0x00000117
+    warning_repeat_value = 0x00000118
+    power_supply_connected = 0x00000119
+    power_supply_not_connected = 0x0000011A
+    power_supply_request_invalid = 0x0000011B
+    power_supply_undervoltage = 0x0000011C
+    capturing_data = 0x0000011D
+    usb3_0_device_non_usb3_0_port = 0x0000011E
+    not_supported_by_this_device = 0x0000011F
+    invalid_device_resolution = 0x00000120
+    invalid_number_channels_for_resolution = 0x00000121
+    channel_disabled_due_to_usb_powered = 0x00000122
+    siggen_dc_voltage_not_configurable = 0x00000123
+    no_trigger_enabled_for_trigger_in_pre_trig = 0x00000124
+    trigger_within_pre_trig_not_armed = 0x00000125
+    trigger_within_pre_not_allowed_with_delay = 0x00000126
+    trigger_index_unavailable = 0x00000127
+    awg_clock_frequency = 0x00000128
+    too_many_channels_in_use = 0x00000129
+    null_conditions = 0x0000012A
+    duplicate_condition_source = 0x0000012B
+    invalid_condition_info = 0x0000012C
+    settings_read_failed = 0x0000012D
+    settings_write_failed = 0x0000012E
+    argument_out_of_range = 0x0000012F
+    hardware_version_not_supported = 0x00000130
+    digital_hardware_version_not_supported = 0x00000131
+    analogue_hardware_version_not_supported = 0x00000132
+    unable_to_convert_to_resistance = 0x00000133
+    duplicated_channel = 0x00000134
+    invalid_resistance_conversion = 0x00000135
+    invalid_value_in_max_buffer = 0x00000136
+    invalid_value_in_min_buffer = 0x00000137
+    siggen_frequency_out_of_range = 0x00000138
+    eeprom2_corrupt = 0x00000139
+    eeprom2_fail = 0x0000013A
+    serial_buffer_too_small = 0x0000013B
+    siggen_trigger_and_external_clock_clash = 0x0000013C
+    warning_siggen_auxio_trigger_disabled = 0x0000013D
+    siggen_gating_auxio_not_available = 0x00000013E
+    siggen_gating_auxio_enabled = 0x00000013F
+    resource_error = 0x00000140
+    temperature_type_invalid = 0x00000141
+    temperature_type_not_supported = 0x00000142
+    timeout = 0x00000143
+    device_not_functioning = 0x00000144
+    internal_error = 0x00000145
+    multiple_devices_found = 0x00000146
+    warning_number_of_segments_reduced = 0x00000147
+    cal_pins_states = 0x00000148
+    cal_pins_frequency = 0x00000149
+    cal_pins_amplitude = 0x0000014A
+    cal_pins_wavetype = 0x0000014B
+    cal_pins_offset = 0x0000014C
+    probe_fault = 0x0000014D
+    probe_identity_unknown = 0x0000014E
+    probe_power_dc_power_supple_required = 0x0000014F
+    probe_not_powered_through_dc_power_supply = 0x00000150
+    probe_config_failure = 0x00000151
+    probe_interaction_callback = 0x00000152
+    unknown_intelligent_probe = 0x00000153
+    intelligent_probe_corrupt = 0x00000154
+    probe_collection_not_started = 0x00000155
+    probe_power_consumption_exceeded = 0x00000156
+    warning_probe_channel_out_of_sync = 0x00000157
+    endpoint_missing = 0x00000158
+    unknown_endpoint_request = 0x00000159
+    adc_type_error = 0x0000015A
+    fpga2_failed = 0x0000015B
+    fpga2_device_status = 0x0000015C
+    enabled_program_fpga2_failed = 0x0000015D
+    no_cannels_or_ports_enabled = 0x0000015E
+    invalid_ratio_mode = 0x0000015F
+    reads_not_supported_in_current_capture_mode = 0x00000160
+    trigger_read_selection_check_failed = 0x00000161
+    data_read1_selection_check_failed = 0x00000162
+    data_read2_selection_check_failed = 0x00000164
+    data_read3_selection_check_failed = 0x00000168
+    read_selection_out_of_range = 0x00000170
+    multiple_ratio_modes = 0x00000171
+    no_samples_read = 0x00000172
+    ratio_mode_not_requested = 0x00000173
+    no_user_read_requests = 0x00000174
+    zero_samples_invalid = 0x00000175
+    analogue_hardware_missing = 0x00000176
+    analogue_hardware_pins = 0x00000177
+    analogue_smps_fault = 0x00000178
+    digital_analogue_hardware_conflict = 0x00000179
+    ratio_mode_buffer_not_set = 0x0000017A
+    resolution_not_supported_by_varient = 0x0000017B
+    threshold_out_of_range = 0x0000017C
+    invalid_simple_trigger_direction = 0x0000017D
+    aux_not_supported = 0x0000017E
+    null_directions = 0x0000017F
+    null_channel_properties = 0x00000180
+    trigger_channel_not_enabled = 0x00000181
+    condition_has_no_trigger_property = 0x00000182
+    ratio_mode_trigger_masking_invalid = 0x00000183
+    trigger_data_requires_min_buffer_size_of_40_samples = 0x00000184
+    no_of_captures_out_of_range = 0x00000185
+    ratio_mode_segment_header_does_not_require_buffers = 0x00000186
+    for_segment_header_use_gettriggerinfo = 0x00000187
+    read_not_set = 0x00000188
+    adc_setting_mismatch = 0x00000189
+    datatype_invalid = 0x0000018A
+    ratio_mode_does_not_support_datatype = 0x0000018B
+    channel_combination_not_valid_in_this_resolution = 0x0000018C
+    use_8bit_resolution = 0x0000018D
+    aggregate_buffers_same_pointer = 0x0000018E
+    overlapped_read_values_out_of_range = 0x0000018F
+    overlapped_read_segments_out_of_range = 0x00000190
+    channelflagscombinations_array_size_too_small = 0x00000191
+    captures_exceeds_no_of_supported_segments = 0x00000192
+    time_units_out_of_range = 0x00000193
+    no_samples_requested = 0x00000194
+    invalid_action = 0x00000195
+    no_of_samples_need_to_be_equal_when_adding_buffers = 0x00000196
+    waiting_for_data_buffers = 0x00000197
+    streaming_only_supports_one_read = 0x00000198
+    clear_data_buffer_invalid = 0x00000199
+    invalid_action_flags_combination = 0x0000019A
+    pico_moth_min_and_max_null_buffers_cannot_be_added = 0x0000019B
+    conflict_in_set_data_buffers_call_remove_data_buffer_to_reset = 0x0000019C
+    removing_data_buffer_entries_not_allowed_while_data_processing = 0x0000019D
+    cyusb_request_failed = 0x00000200
+    streaming_data_required = 0x00000201
+    invalid_number_of_samples = 0x00000202
+    inalid_distribution = 0x00000203
+    buffer_length_greater_than_int32_t = 0x00000204
+    pll_mux_out_failed = 0x00000209
+    one_pulse_width_direction_allowed = 0x0000020A
+    external_trigger_not_supported = 0x0000020B
+    no_trigger_conditions_set = 0x0000020C
+    no_of_channel_trigger_properties_out_of_range = 0x0000020D
+    probe_compnent_error = 0x0000020E
+    invalid_trigger_channels_for_ets = 0x00000210
+    not_avaliable_when_streaming_is_running = 0x00000211
+    invalid_trigger_within_pre_trigger_state = 0x00000212
+    zero_number_of_captures_invalid = 0x00000213
+    trigger_delay_out_of_range = 0x00000300
+    invalid_threshold_direction = 0x00000301
+    invalid_thresgold_mode = 0x00000302
+    device_time_stamp_reset = 0x01000000
+    watchdogtimer = 0x10000000
+    ipp_not_found = 0x10000001
+    ipp_no_function = 0x10000002
+    ipp_error = 0x10000003
+    shadow_cal_not_available = 0x10000004
+    shadow_cal_disabled = 0x10000005
+    shadow_cal_error = 0x10000006
+    shadow_cal_corrupt = 0x10000007
