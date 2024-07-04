@@ -40,19 +40,37 @@ class ChannelBufferIndex(Enum):
 
 
 class Range(Enum):
-    range_10mV = 0
-    range_20mV = auto()
-    range_50mV = auto()
-    range_100mV = auto()
-    range_200mV = auto()
-    range_500mV = auto()
-    range_1V = auto()
-    range_2V = auto()
-    range_5V = auto()
-    range_10V = auto()
-    range_20V = auto()
-    range_50V = auto()
-    max_ranges = auto()
+    range_10mV = 0, 10e-3
+    range_20mV = 1, 20e-3
+    range_50mV = 2, 50e-3
+    range_100mV = 3, 100e-3
+    range_200mV = 4, 200e-3
+    range_500mV = 5, 500e-3
+    range_1V = 6, 1.0
+    range_2V = 7, 2.0
+    range_5V = 8, 5.0
+    range_10V = 9, 10.0
+    range_20V = 10, 20.0
+    range_50V = 11, 50.0
+    max_ranges = 12, float("nan")
+
+    def __new__(cls, value, volts):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj._volts_ = volts
+        return obj
+
+    @property
+    def volts(self):
+        return self._volts_
+
+    @classmethod
+    def from_volts(cls, voltage):
+        for member in cls:
+            if member.volts == voltage:
+                return member
+
+        raise ValueError(f"No enum member with voltage {voltage}")
 
 
 class Coupling(Enum):
@@ -72,13 +90,31 @@ class EtsMode(Enum):
 
 
 class TimeUnits(Enum):
-    fs = 0
-    ps = auto()
-    ns = auto()
-    us = auto()
-    ms = auto()
-    s = auto()
-    max_time_units = auto()
+    fs = 0, 1e-15
+    ps = 1, 1e-12
+    ns = 2, 1e-9
+    us = 3, 1e-6
+    ms = 4, 1e-3
+    s = 5, 1.0
+    max_time_units = 6, float("nan")
+
+    def __new__(cls, value, seconds):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj._seconds_ = seconds
+        return obj
+
+    @property
+    def seconds(self):
+        return self._seconds_
+
+    @classmethod
+    def from_seconds(cls, time):
+        for member in cls:
+            if member.seconds == time:
+                return member
+
+        raise ValueError(f"No enum member with time {time}")
 
 
 class SweepType(Enum):
